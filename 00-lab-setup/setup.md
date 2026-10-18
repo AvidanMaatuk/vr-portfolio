@@ -12,14 +12,14 @@ sudo apt update && sudo apt upgrade -y
 Install the core toolchain, Docker, Ghidra, and the C/C++ build dependencies required to compile Python extensions:
 ```bash
 sudo apt install -y build-essential gdb git python3 python3-pip python3-dev \
-  python3-venv docker.io docker-compose-plugin docker-compose cmake pkg-config \
+  python3-venv docker.io docker-compose cmake pkg-config \
   libglib2.0-dev libffi-dev libssl-dev ghidra
 ```
 
 ## 3. Configure Tooling
 ### Install pwndbg (GDB plugin)
 ```bash
-git clone [https://github.com/pwndbg/pwndbg](https://github.com/pwndbg/pwndbg)
+git clone https://github.com/pwndbg/pwndbg
 cd pwndbg && ./setup.sh && cd ..
 ```
 
