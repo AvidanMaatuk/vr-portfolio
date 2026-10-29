@@ -1,0 +1,244 @@
+└─$ gdb -q ./mem
+pwndbg: loaded 200 pwndbg commands. Type pwndbg [filter] for a list.
+pwndbg: created 12 GDB functions (can be used with print/break). Type help function to see them.                                                          
+Reading symbols from ./mem...
+------- tip of the day (disable with set show-tips off) -------
+Use the vmmap command for a better & colored memory maps display (than the GDB's info proc mappings)
+pwndbg> b greet
+Breakpoint 1 at 0x40113e: file mem.c, line 6.
+pwndbg> run
+Starting program: /home/kali/Desktop/vr-portfolio/01-foundations/mem 
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/usr/lib/x86_64-linux-gnu/libthread_db.so.1".
+
+Breakpoint 1, greet () at mem.c:6
+6           printf("Name: ");
+LEGEND: STACK | HEAP | CODE | DATA | WX | RODATA
+───────────[ REGISTERS / show-flags off / show-compact-regs off ]────────────
+ RAX  0x7ffff7f98de8 (environ) —▸ 0x7fffffffdde8 —▸ 0x7fffffffe189 ◂— 'COLORFGBG=15;0'
+ RBX  0
+ RCX  0x403e00 (__do_global_dtors_aux_fini_array_entry) —▸ 0x401100 (__do_global_dtors_aux) ◂— endbr64                                                    
+ RDX  0x7fffffffdde8 —▸ 0x7fffffffe189 ◂— 'COLORFGBG=15;0'
+ RDI  1
+ RSI  0x7fffffffddd8 —▸ 0x7fffffffe156 ◂— '/home/kali/Desktop/vr-portfolio/01-foundations/mem'
+ R8   0x7ffff7f91680 (__exit_funcs) —▸ 0x7ffff7f92fa0 (initial) ◂— 0
+ R9   0x7ffff7f92fa0 (initial) ◂— 0
+ R10  0x7fffffffda10 ◂— 0x800000
+ R11  0x206
+ R12  1
+ R13  0x7ffff7ffd000 (_rtld_global) —▸ 0x7ffff7ffe2e0 ◂— 0
+ R14  0x7fffffffdde8 —▸ 0x7fffffffe189 ◂— 'COLORFGBG=15;0'
+ R15  0x403e00 (__do_global_dtors_aux_fini_array_entry) —▸ 0x401100 (__do_global_dtors_aux) ◂— endbr64                                                    
+ RBP  0x7fffffffdca0 —▸ 0x7fffffffdcb0 —▸ 0x7fffffffddd8 —▸ 0x7fffffffe156 ◂— '/home/kali/Desktop/vr-portfolio/01-foundations/mem'
+ RSP  0x7fffffffdc80 {name} ◂— 0
+ RIP  0x40113e (greet+8) ◂— lea rax, [rip + 0xebf]
+────────────────────[ DISASM / x86-64 / set emulate on ]─────────────────────
+   0x401136 <greet>       push   rbp
+   0x401137 <greet+1>     mov    rbp, rsp
+   0x40113a <greet+4>     sub    rsp, 0x20
+b► 0x40113e <greet+8>     lea    rax, [rip + 0xebf]     RAX => 0x402004 ◂— 0x4800203a656d614e /* 'Name: ' */
+   0x401145 <greet+15>    mov    rdi, rax               RDI => 0x402004 ◂— 0x4800203a656d614e /* 'Name: ' */
+   0x401148 <greet+18>    mov    eax, 0                 EAX => 0
+   0x40114d <greet+23>    call   printf@plt                  <printf@plt>
+ 
+   0x401152 <greet+28>    mov    rdx, qword ptr [rip + 0x2ec7]     RDX, [stdin@GLIBC_2.2.5]                                                               
+   0x401159 <greet+35>    lea    rax, [rbp - 0x20]
+   0x40115d <greet+39>    mov    esi, 0x20                         ESI => 0x20
+   0x401162 <greet+44>    mov    rdi, rax
+──────────────────────────────[ SOURCE (CODE) ]──────────────────────────────
+In file: /home/kali/Desktop/vr-portfolio/01-foundations/mem.c:6
+    1 #include <stdio.h>
+    2 #include <string.h>
+    3 
+    4 void greet(void) {
+    5     char name [32];
+ ►  6     printf("Name: ");
+    7     fgets(name, sizeof(name), stdin);
+    8     printf("Hello, %s", name);
+    9 }
+   10 
+   11 int main(void) {
+   12     greet();
+   13     return 0;
+   14 }
+──────────────────────────────────[ STACK ]──────────────────────────────────
+00:0000│ rsp 0x7fffffffdc80 {name} ◂— 0
+... ↓        3 skipped
+04:0020│ rbp 0x7fffffffdca0 —▸ 0x7fffffffdcb0 —▸ 0x7fffffffddd8 —▸ 0x7fffffffe156 ◂— '/home/kali/Desktop/vr-portfolio/01-foundations/mem'                 
+05:0028│+008 0x7fffffffdca8 —▸ 0x401191 (main+9) ◂— mov eax, 0
+06:0030│+010 0x7fffffffdcb0 —▸ 0x7fffffffddd8 —▸ 0x7fffffffe156 ◂— '/home/kali/Desktop/vr-portfolio/01-foundations/mem'
+07:0038│+018 0x7fffffffdcb8 —▸ 0x7ffff7dd3fba (__libc_start_call_main+122) ◂— mov edi, eax
+────────────────────────────────[ BACKTRACE ]────────────────────────────────
+ ► 0 0x40113e       greet+8
+   1 0x401191       main+9
+   2 0x7ffff7dd3fba __libc_start_call_main+122
+   3 0x7ffff7dd40d7 __libc_start_main+135
+   4 0x401071       _start+33
+─────────────────────────────────────────────────────────────────────────────
+pwndbg> next
+7           fgets(name, sizeof(name), stdin);
+LEGEND: STACK | HEAP | CODE | DATA | WX | RODATA
+───────────[ REGISTERS / show-flags off / show-compact-regs off ]────────────
+*RAX  6
+ RBX  0
+*RCX  0
+*RDX  0
+*RDI  0x7fffffffdaa0 —▸ 0x7fffffffdad0 ◂— 0x203a656d614e /* 'Name: ' */
+*RSI  0x20
+*R8   0
+*R9   0
+*R10  0x7ffff7f91ac8 (main_arena+8) —▸ 0x405410 ◂— 0
+*R11  0x426000
+ R12  1
+ R13  0x7ffff7ffd000 (_rtld_global) —▸ 0x7ffff7ffe2e0 ◂— 0
+ R14  0x7fffffffdde8 —▸ 0x7fffffffe189 ◂— 'COLORFGBG=15;0'
+ R15  0x403e00 (__do_global_dtors_aux_fini_array_entry) —▸ 0x401100 (__do_global_dtors_aux) ◂— endbr64                                                    
+ RBP  0x7fffffffdca0 —▸ 0x7fffffffdcb0 —▸ 0x7fffffffddd8 —▸ 0x7fffffffe156 ◂— '/home/kali/Desktop/vr-portfolio/01-foundations/mem'
+ RSP  0x7fffffffdc80 {name} ◂— 0
+*RIP  0x401152 (greet+28) ◂— mov rdx, qword ptr [rip + 0x2ec7]
+────────────────────[ DISASM / x86-64 / set emulate on ]─────────────────────
+   0x40113a <greet+4>     sub    rsp, 0x20
+b+ 0x40113e <greet+8>     lea    rax, [rip + 0xebf]     RAX => 0x402004 ◂— 0x4800203a656d614e /* 'Name: ' */
+   0x401145 <greet+15>    mov    rdi, rax               RDI => 0x402004 ◂— 0x4800203a656d614e /* 'Name: ' */
+   0x401148 <greet+18>    mov    eax, 0                 EAX => 0
+   0x40114d <greet+23>    call   printf@plt                  <printf@plt>
+ 
+ ► 0x401152 <greet+28>    mov    rdx, qword ptr [rip + 0x2ec7]     RDX, [stdin@GLIBC_2.2.5] => 0x7ffff7f918e0 (_IO_2_1_stdin_) ◂— 0xfbad2088              
+   0x401159 <greet+35>    lea    rax, [rbp - 0x20]                 RAX => 0x7fffffffdc80 ◂— 0                                                             
+   0x40115d <greet+39>    mov    esi, 0x20                         ESI => 0x20
+   0x401162 <greet+44>    mov    rdi, rax                          RDI => 0x7fffffffdc80 ◂— 0                                                             
+   0x401165 <greet+47>    call   fgets@plt                   <fgets@plt>
+ 
+   0x40116a <greet+52>    lea    rax, [rbp - 0x20]
+──────────────────────────────[ SOURCE (CODE) ]──────────────────────────────
+In file: /home/kali/Desktop/vr-portfolio/01-foundations/mem.c:7
+    1 #include <stdio.h>
+    2 #include <string.h>
+    3 
+    4 void greet(void) {
+    5     char name [32];
+    6     printf("Name: ");
+ ►  7     fgets(name, sizeof(name), stdin);
+    8     printf("Hello, %s", name);
+    9 }
+   10 
+   11 int main(void) {
+   12     greet();
+   13     return 0;
+   14 }
+──────────────────────────────────[ STACK ]──────────────────────────────────
+00:0000│ rsp 0x7fffffffdc80 {name} ◂— 0
+... ↓        3 skipped
+04:0020│ rbp 0x7fffffffdca0 —▸ 0x7fffffffdcb0 —▸ 0x7fffffffddd8 —▸ 0x7fffffffe156 ◂— '/home/kali/Desktop/vr-portfolio/01-foundations/mem'                 
+05:0028│+008 0x7fffffffdca8 —▸ 0x401191 (main+9) ◂— mov eax, 0
+06:0030│+010 0x7fffffffdcb0 —▸ 0x7fffffffddd8 —▸ 0x7fffffffe156 ◂— '/home/kali/Desktop/vr-portfolio/01-foundations/mem'
+07:0038│+018 0x7fffffffdcb8 —▸ 0x7ffff7dd3fba (__libc_start_call_main+122) ◂— mov edi, eax
+────────────────────────────────[ BACKTRACE ]────────────────────────────────
+ ► 0 0x401152       greet+28
+   1 0x401191       main+9
+   2 0x7ffff7dd3fba __libc_start_call_main+122
+   3 0x7ffff7dd40d7 __libc_start_main+135
+   4 0x401071       _start+33
+─────────────────────────────────────────────────────────────────────────────
+pwndbg> p &name
+$1 = (char (*)[32]) 0x7fffffffdc80
+pwndbg> info frame
+Stack level 0, frame at 0x7fffffffdcb0:
+ rip = 0x401152 in greet (mem.c:7); saved rip = 0x401191
+ called by frame at 0x7fffffffdcc0
+ source language c.
+ Arglist at 0x7fffffffdca0, args: 
+ Locals at 0x7fffffffdca0, Previous frame's sp is 0x7fffffffdcb0
+ Saved registers:
+  rbp at 0x7fffffffdca0, rip at 0x7fffffffdca8
+pwndbg> x/6gx $rbp
+0x7fffffffdca0: 0x00007fffffffdcb0      0x0000000000401191
+0x7fffffffdcb0: 0x00007fffffffddd8      0x00007ffff7dd3fba
+0x7fffffffdcc0: 0x00007fffffffdd90      0x0000000000401188
+pwndbg> exit
+
+┌──(kali㉿kali)-[~/Desktop/vr-portfolio/01-foundations]
+└─$ gdb -q ./two_buffers 
+pwndbg: loaded 200 pwndbg commands. Type pwndbg [filter] for a list.
+pwndbg: created 12 GDB functions (can be used with print/break). Type help function to see them.
+Reading symbols from ./two_buffers...
+------- tip of the day (disable with set show-tips off) -------
+Pwndbg resolves kernel memory maps by parsing page tables (default) or via monitor info mem QEMU gdbstub command (use set kernel-vmmap-via-page-tables off for that)
+pwndbg> b two_buffers
+Breakpoint 1 at 0x40113e: file two_buffers.c, line 7.
+pwndbg> run
+Starting program: /home/kali/Desktop/vr-portfolio/01-foundations/two_buffers 
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/usr/lib/x86_64-linux-gnu/libthread_db.so.1".
+
+Breakpoint 1, two_buffers () at two_buffers.c:7
+7           fgets(buffer_one, sizeof(buffer_one), stdin);
+LEGEND: STACK | HEAP | CODE | DATA | WX | RODATA
+───────────[ REGISTERS / show-flags off / show-compact-regs off ]────────────
+ RAX  0x7ffff7f98de8 (environ) —▸ 0x7fffffffddc8 —▸ 0x7fffffffe179 ◂— 'COLORFGBG=15;0'
+ RBX  0
+ RCX  0x403e00 (__do_global_dtors_aux_fini_array_entry) —▸ 0x401100 (__do_global_dtors_aux) ◂— endbr64
+ RDX  0x7fffffffddc8 —▸ 0x7fffffffe179 ◂— 'COLORFGBG=15;0'
+ RDI  1
+ RSI  0x7fffffffddb8 —▸ 0x7fffffffe13e ◂— '/home/kali/Desktop/vr-portfolio/01-foundations/two_buffers'
+ R8   0x7ffff7f91680 (__exit_funcs) —▸ 0x7ffff7f92fa0 (initial) ◂— 0
+ R9   0x7ffff7f92fa0 (initial) ◂— 0
+ R10  0x7fffffffd9f0 ◂— 0x800000
+ R11  0x202
+ R12  1
+ R13  0x7ffff7ffd000 (_rtld_global) —▸ 0x7ffff7ffe2e0 ◂— 0
+ R14  0x7fffffffddc8 —▸ 0x7fffffffe179 ◂— 'COLORFGBG=15;0'
+ R15  0x403e00 (__do_global_dtors_aux_fini_array_entry) —▸ 0x401100 (__do_global_dtors_aux) ◂— endbr64                                                    
+ RBP  0x7fffffffdc80 —▸ 0x7fffffffdc90 —▸ 0x7fffffffddb8 —▸ 0x7fffffffe13e ◂— '/home/kali/Desktop/vr-portfolio/01-foundations/two_buffers'
+ RSP  0x7fffffffdc10 {buffer_two} ◂— 0
+ RIP  0x40113e (two_buffers+8) ◂— mov rdx, qword ptr [rip + 0x2edb]
+────────────────────[ DISASM / x86-64 / set emulate on ]─────────────────────
+   0x401136 <two_buffers>       push   rbp
+   0x401137 <two_buffers+1>     mov    rbp, rsp
+   0x40113a <two_buffers+4>     sub    rsp, 0x70
+b► 0x40113e <two_buffers+8>     mov    rdx, qword ptr [rip + 0x2edb]     RDX, [stdin@GLIBC_2.2.5] => 0x7ffff7f918e0 (_IO_2_1_stdin_) ◂— 0xfbad2088
+   0x401145 <two_buffers+15>    lea    rax, [rbp - 0x30]                 RAX => 0x7fffffffdc50 ◂— 0
+   0x401149 <two_buffers+19>    mov    esi, 0x28                         ESI => 0x28
+   0x40114e <two_buffers+24>    mov    rdi, rax                          RDI => 0x7fffffffdc50 ◂— 0
+   0x401151 <two_buffers+27>    call   fgets@plt                   <fgets@plt>
+ 
+   0x401156 <two_buffers+32>    mov    rdx, qword ptr [rip + 0x2ec3]     RDX, [stdin@GLIBC_2.2.5]
+   0x40115d <two_buffers+39>    lea    rax, [rbp - 0x70]
+   0x401161 <two_buffers+43>    mov    esi, 0x3c                         ESI => 0x3c
+──────────────────────────────[ SOURCE (CODE) ]──────────────────────────────
+In file: /home/kali/Desktop/vr-portfolio/01-foundations/two_buffers.c:7
+    1 #include <stdio.h>
+    2 #include <string.h>
+    3 
+    4 void two_buffers(void) {
+    5     char buffer_one [40];
+    6     char buffer_two [60];
+ ►  7     fgets(buffer_one, sizeof(buffer_one), stdin);
+    8     fgets(buffer_two, sizeof(buffer_two), stdin);
+    9     printf("buffer_one: %s\nbuffer_two: %s", buffer_one, buffer_two);
+   10 }
+   11 
+   12 int main(void) {
+   13     two_buffers();
+   14     return 0;
+──────────────────────────────────[ STACK ]──────────────────────────────────
+00:0000│ rsp 0x7fffffffdc10 {buffer_two} ◂— 0
+... ↓        7 skipped
+────────────────────────────────[ BACKTRACE ]────────────────────────────────
+ ► 0 0x40113e       two_buffers+8
+   1 0x401199       main+9
+   2 0x7ffff7dd3fba __libc_start_call_main+122
+   3 0x7ffff7dd40d7 __libc_start_main+135
+   4 0x401071       _start+33
+─────────────────────────────────────────────────────────────────────────────
+pwndbg> p $buffer_one
+$1 = void
+pwndbg> p &buffer_one
+$2 = (char (*)[40]) 0x7fffffffdc50
+pwndbg> p &buffer_two
+$3 = (char (*)[60]) 0x7fffffffdc10
+pwndbg> exit
+
+
+
+
